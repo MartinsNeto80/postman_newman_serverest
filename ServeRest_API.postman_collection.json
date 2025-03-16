@@ -1,0 +1,301 @@
+{
+	"info": {
+		"_postman_id": "c16c6623-086c-4866-b75f-f7943f7a5881",
+		"name": "ServeRest_API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34022025"
+	},
+	"item": [
+		{
+			"name": "list_registered_users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status Code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/usuarios",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register_users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"Full_Name\", nameGenerator() +\" \"+lastNameGenerator());\r",
+							"\r",
+							"pm.collectionVariables.set(\"Email\", nameGenerator().toLowerCase()+pm.variables.replaceIn('{{$randomInt}}')+'@email.com');\r",
+							"\r",
+							"pm.collectionVariables.set(\"Password\", \"Senha123\");\r",
+							"\r",
+							"pm.collectionVariables.set(\"Admin\", \"true\");\r",
+							"\r",
+							"function nameGenerator(){\r",
+							"    var name = [\"Lucas\", \"Mariana\", \"Joao\", \"Fernanda\", \"Ricardo\", \"Camila\", \"Pedro\", \"Beatriz\", \"Gustavo\", \"Larissa\"];\r",
+							"    var drawName = name[Math.floor(Math.random() * name.length)];\r",
+							"    return drawName\r",
+							"}\r",
+							"\r",
+							"function lastNameGenerator(){\r",
+							"    var lastName = [\"da Silva\", \"de Souza\", \"Costa\", \"Pereira\", \"Oliveira\", \"Rodrigues\", \"Martins\", \"Ferreira\", \"Almeida\", \"Gomes\"];\r",
+							"    var drawName = lastName[Math.floor(Math.random() * lastName.length)];\r",
+							"    return drawName\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status Code is 201\", function(){\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Success Message\", function () {\r",
+							"    pm.expect(pm.response.json().message).to.exist;\r",
+							"    pm.expect(pm.response.json().message).to.be.eql(\"Cadastro realizado com sucesso\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Return ID\", function () {\r",
+							"    pm.expect(pm.response.json()._id).to.exist;\r",
+							"    pm.expect(pm.response.json().message).not.be.null;\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"UserID\", pm.response.json()._id)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"{{Full_Name}}\",\r\n  \"email\": \"{{Email}}\",\r\n  \"password\": \"{{Password}}\",\r\n  \"administrador\": \"{{Admin}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/usuarios",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "list_user_by_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status Code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"ID validation\", function () {\r",
+							"    pm.expect(pm.environment.get(\"UserID\")).to.eq(pm.response.json()._id)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/usuarios/{{UserID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuarios",
+						"{{UserID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit_username_by_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status Code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Success Message\", function () {\r",
+							"    pm.expect(pm.response.json().message).to.exist;\r",
+							"    pm.expect(pm.response.json().message).to.be.eql(\"Registro alterado com sucesso\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"Full_Name\", nameGenerator() +\" \"+lastNameGenerator());\r",
+							"\r",
+							"function nameGenerator(){\r",
+							"    var name = [\"Lucas\", \"Mariana\", \"Joao\", \"Fernanda\", \"Ricardo\", \"Camila\", \"Pedro\", \"Beatriz\", \"Gustavo\", \"Larissa\"];\r",
+							"    var drawName = name[Math.floor(Math.random() * name.length)];\r",
+							"    return drawName\r",
+							"}\r",
+							"\r",
+							"function lastNameGenerator(){\r",
+							"    var lastName = [\"da Silva\", \"de Souza\", \"Costa\", \"Pereira\", \"Oliveira\", \"Rodrigues\", \"Martins\", \"Ferreira\", \"Almeida\", \"Gomes\"];\r",
+							"    var drawName = lastName[Math.floor(Math.random() * lastName.length)];\r",
+							"    return drawName\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"{{Full_Name}}\",\r\n  \"email\": \"{{Email}}\",\r\n  \"password\": \"{{Password}}\",\r\n  \"administrador\": \"{{Admin}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/usuarios/{{UserID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuarios",
+						"{{UserID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete_user_by_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status Code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Success Message\", function () {\r",
+							"    pm.expect(pm.response.json().message).to.exist;\r",
+							"    pm.expect(pm.response.json().message).to.be.eql(\"Registro excluído com sucesso\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/usuarios/{{UserID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuarios",
+						"{{UserID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "Full_Name",
+			"value": ""
+		},
+		{
+			"key": "Email",
+			"value": ""
+		},
+		{
+			"key": "Password",
+			"value": ""
+		},
+		{
+			"key": "Admin",
+			"value": ""
+		}
+	]
+}
